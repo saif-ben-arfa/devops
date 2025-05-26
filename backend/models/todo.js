@@ -4,16 +4,29 @@ const Schema = mongoose.Schema;
 
 let Todo = new Schema({
     title: {
-        type: String
+        type: String,
+        required: true
     },
     description: {
         type: String
     },
-    is_complete: {
-        type: Boolean
+    priority: {
+        type: String,
+        enum: ['Low', 'Medium', 'High'],
+        default: 'Medium'
     },
     due_date: {
         type: Date
+    },
+    status: {
+        type: String,
+        enum: ['In Progress', 'Completed', 'Failed'],
+        default: 'In Progress'
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 });
 
