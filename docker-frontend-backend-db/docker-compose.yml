@@ -1,34 +1,38 @@
 version: '3'
 services:
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    build: ./frontend
     ports:
-      - "3000:80"  # Maps port 80 in the container to port 3000 on the host
-    environment:
-      - REACT_APP_API_URL=http://backend:3001/api  # Connect frontend to backend
-    networks:
-      - app-network
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "3001:3001"  # Maps port 3001 in the container to port 3001 on the host
+      - "80:80"
     depends_on:
-      - mongo
+      - backend
     environment:
-      - MONGO_URL=mongodb://mongo:27017/todos  # Connect backend to MongoDB
-    networks:
-      - app-network
-  mongo:
-    image: mongo
-    ports:
-      - "27017:27017"  # Maps port 27017 in the container to port 27017 on the host
-    networks:
-      - app-network
+      - REACT_APP_API_URL=http://backend:3001 # Updated to use service name
 
-networks:
-  app-network:
-    driver: bridge     # create a bridge network for the app
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongodb
+    environment:
+      - PORT=3001
+      - MONGO_URL=mongodb://mongodb:27017/todoapp
+      - JWT_SECRET=4ab03d8be676e73d93476bb
+      - GOOGLE_CLIENT_ID=233401460917-mig8rfrlim9rs56vusn4i4e39jveaje1.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=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
+      - GOOGLE_REDIRECT_URI=http://localhost:3001/api/google/callback
+      - SESSION_SECRET=secret123
+      - EMAIL_SERVICE=gmail
+      - EMAIL_USER=dhia.borji2001@gmail.com
+      - EMAIL_PASS=ovzt phrf ykke dmmq
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
